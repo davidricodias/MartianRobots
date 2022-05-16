@@ -74,6 +74,14 @@ class Robot {
 		return this.position_y;
 	}	
 
+	set x(position){
+		this.position_x = position;
+	}
+
+	set y(position){
+		this.position_y = position;
+	}
+
 	// Function overloading
 	toString(){
 		var output = this.position_x.toString() + " " + this.position_y.toString() + " " + this.translateAngleToCardinal(this.angle); 
@@ -134,10 +142,10 @@ class Mars {
 		
 		// Initializes an empty map
 		this.map = []
-		for(var i=0; i < max_y_size; i++){
+		for(var i=0; i <= max_y_size; i++){
 			this.map[i] = [];
-			for(var j=0; j < max_x_size; j++){
-				this.map[i][j] = undefined;
+			for(var j=0; j <= max_x_size; j++){
+				this.map[i][j] = '.';
 			}
 		}
 	}
@@ -159,7 +167,12 @@ class Mars {
 				
 				// If the robot goes outside the map	
 				if (!(this.validPosition(robot))) {
+
+					// Updates last known position of the robot
 					robot.gotLost();
+					robot.x = last_position_x;
+					robot.y = last_position_y;
+
 					// Marks the map with the scent
 					this.map[last_position_y][last_position_x] = 'X';
 				}
@@ -172,7 +185,7 @@ class Mars {
 			0 <= robot.y && robot.y <= this.max_y_size) {
 			return true;
 		}
-		return False;
+		return false;
 	}
 
 	robots(){
@@ -180,9 +193,12 @@ class Mars {
 	}
 
 	toString(){
-		let output = ""
+		let output = '';
 		for(var i=0; i<this.robots.length; i++){
 			output += this.robots[i].toString();
+			if (i < (this.robots.length - 1)) {
+				output += '\n';
+			}
 		}
 		return output;
 	}
@@ -195,12 +211,13 @@ class Mars {
 // Example
 // Create map
 mars = new Mars(5, 3);
+mars.addRobot(1, 1, 'E', 'RFRFRFRF');
+mars.addRobot(3, 2, 'N', 'FRRFLLFFRRFLL');
 mars.addRobot(0, 3, 'W', 'LLFFFRFLFL');
 mars.executeRobots();
-console.log(mars.toString());
 // Add robots
 
 // Execute instructions
 
 // Write ouput
-
+console.log(mars.toString());

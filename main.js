@@ -6,11 +6,15 @@
 class Robot {
 
 	constructor(position_x=null, position_y=null, orientation=null, instructions=null, is_lost=false){
+		// State
 		this.position_x = position_x;
 		this.position_y = position_y;
 		this.angle = this.translateCardinalToAngle(orientation);
 		this.instructions = this.validateInstructions(instructions).split("");
+
+		// Aux properties
 		this.is_lost = is_lost;
+		this.reached_scent = false;
 	}
 
 	rotate(angle) {
@@ -60,6 +64,11 @@ class Robot {
 	
 	isLost(){
 		return this.is_lost;
+	}
+
+	reachedScent(){
+		this.instructions = [];
+		this.reached_scent = true;
 	}
 
 	instructionsEmpty(){
@@ -132,8 +141,6 @@ class Robot {
 	}
 }
 
-// TODO: Añadir funciones de map
-//		 - Salida de estado final de robot
 class Mars {
 	constructor(max_x_size, max_y_size){
 		this.max_x_size = max_x_size;
@@ -161,20 +168,27 @@ class Mars {
 			let robot = this.robots[i];
 			// Execute its instructions until it gets lost or empties its stack
 			while(robot.isLost() == false && robot.instructionsEmpty() == false){
-				let last_position_x = robot.x;
-				let last_position_y = robot.y;
-				robot.executeInstruction();
-				
-				// If the robot goes outside the map	
-				if (!(this.validPosition(robot))) {
 
-					// Updates last known position of the robot
-					robot.gotLost();
-					robot.x = last_position_x;
-					robot.y = last_position_y;
+				if(this.map[robot.y][robot.x] == 'X'){
+					robot.reachedScent();
+				} else {
 
-					// Marks the map with the scent
-					this.map[last_position_y][last_position_x] = 'X';
+					let last_position_x = robot.x;
+					let last_position_y = robot.y;
+					robot.executeInstruction();
+
+					// If the robot goes outside the map	
+					if (!(this.validPosition(robot))) {
+
+						// Updates last known position of the robot
+						robot.gotLost();
+						robot.x = last_position_x;
+						robot.y = last_position_y;
+
+						// Marks the map with the scent
+						this.map[last_position_y][last_position_x] = 'X';
+
+					}
 				}
 			}	
 		}
@@ -205,16 +219,18 @@ class Mars {
 }
 
 
-// Read input
-
-
 // Example
-// Create map
 mars = new Mars(5, 3);
 mars.addRobot(1, 1, 'E', 'RFRFRFRF');
 mars.addRobot(3, 2, 'N', 'FRRFLLFFRRFLL');
 mars.addRobot(0, 3, 'W', 'LLFFFRFLFL');
+mars.addRobot(3, 2, 'N', 'FFF');
 mars.executeRobots();
+
+// Read input
+
+// Create map
+
 // Add robots
 
 // Execute instructions

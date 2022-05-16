@@ -5,16 +5,16 @@
 
 class Robot {
 
-	constructor(position_x=null, position_y=null, orientation=null, instructions=null, is_lost=False){
+	constructor(position_x=null, position_y=null, orientation=null, instructions=null, is_lost=false){
 		this.position_x = position_x;
 		this.position_y = position_y;
-		this.angle = Robot.translateOrientation(orientation);
-		this.instructions = Robot.validateInstructions(instructions);
+		this.angle = this.translateCardinalToAngle(orientation);
+		this.instructions = this.validateInstructions(instructions).split("");
 		this.is_lost = is_lost;
 	}
 
 	rotate(angle) {
-		this.angle += angle;
+		this.angle += (angle + 360);
 		this.angle = this.angle % 360;
 	}
 
@@ -30,16 +30,15 @@ class Robot {
 			this.position_x--;
 		// South
 		} else if (this.angle == 270) {
-			this.positions_y--;
+			this.position_y--;
 		// Error
 		} else {
 			throw new RangeError('Invalid angle');
 		}
 	}
 	
-	executeInstruction(map){
-		instruction = this.instructions.pop()
-		
+	executeInstruction(){
+		let instruction = this.instructions.shift()
 		// Forward
 		if (instruction == 'F'){
 			this.forward();
@@ -56,10 +55,10 @@ class Robot {
 	}
 
 	gotLost(){
-		this.is_lost = True;
+		this.is_lost = true;
 	}
 	
-	get lost(){
+	isLost(){
 		return this.is_lost;
 	}
 
@@ -75,7 +74,17 @@ class Robot {
 		return this.position_y;
 	}	
 
-	static translateOrientation(cardinal_orientation){
+	// Function overloading
+	toString(){
+		var output = this.position_x.toString() + " " + this.position_y.toString() + " " + this.translateAngleToCardinal(this.angle); 
+		if (this.is_lost){
+			output += (" " + "LOST");
+		}		
+		return output;
+	}
+
+	translateCardinalToAngle(cardinal_orientation){
+		let angle = -1;
 		if (cardinal_orientation == 'E'){
 			angle = 0;
 		} else if (cardinal_orientation == 'N'){
@@ -83,16 +92,30 @@ class Robot {
 		} else if (cardinal_orientation == 'W'){
 			angle = 180;
 		} else if (cardinal_orientation == 'S'){
-			angle = 270;
+			angle = 270;j
 		} else {
 			throw new RangeError('Invalid orientation');
 		}
 		return angle;
 	}
+	
+	translateAngleToCardinal(angle){
+		if(angle == 0){
+			return 'E';
+		} else if (angle == 90){
+			return 'N';
+		} else if (angle == 180){
+			return 'W';
+		} else if (angle == 270){
+			return 'S';
+		} else {
+			throw new RangeError('Invalid angle');
+		}
+	}
 
-	static validateInstructions(instructions){
+	validateInstructions(instructions){
 		// Regex for instructions parsing
-		instructions_expression = new RegExp('^(F|L|R){1,100}$');
+		let instructions_expression = new RegExp('^(F|L|R){1,100}$');
 		if (instructions_expression.test(instructions)) {
 			return instructions;
 		} else {
@@ -120,17 +143,18 @@ class Mars {
 	}
 
 	addRobot(position_x, position_y, orientation, instructions){
-		robot = new Robot(position_x, position_y, orientation, instructions);
-		this.robots.append(robot);
+		var robot = new Robot(position_x, position_y, orientation, instructions);
+		this.robots.push(robot);
 	}
 	
 	executeRobots(){
 		// For each robot
-		for (let robot in this.robots){
+		for(var i=0; i<this.robots.length; i++){
+			let robot = this.robots[i];
 			// Execute its instructions until it gets lost or empties its stack
-			while(robot.isLost() == False && robot.instructionsEmpty == False){
-				last_position_x = robot.x;
-				last_position_y = robot.y;
+			while(robot.isLost() == false && robot.instructionsEmpty() == false){
+				let last_position_x = robot.x;
+				let last_position_y = robot.y;
 				robot.executeInstruction();
 				
 				// If the robot goes outside the map	
@@ -146,7 +170,7 @@ class Mars {
 	validPosition(robot){
 		if (0 <= robot.x && robot.x <= this.max_x_size &&
 			0 <= robot.y && robot.y <= this.max_y_size) {
-			return True;
+			return true;
 		}
 		return False;
 	}
@@ -154,13 +178,26 @@ class Mars {
 	robots(){
 		return this.robots;
 	}
+
+	toString(){
+		let output = ""
+		for(var i=0; i<this.robots.length; i++){
+			output += this.robots[i].toString();
+		}
+		return output;
+	}
 }
 
 
 // Read input
 
 
-
+// Example
+// Create map
+mars = new Mars(5, 3);
+mars.addRobot(0, 3, 'W', 'LLFFFRFLFL');
+mars.executeRobots();
+console.log(mars.toString());
 // Add robots
 
 // Execute instructions

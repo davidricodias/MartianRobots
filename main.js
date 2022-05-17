@@ -5,7 +5,7 @@
 
 class Robot {
 
-	constructor(position_x=null, position_y=null, orientation=null, instructions=null, is_lost=false){
+	constructor(position_x=null, position_y=null, orientation=null, instructions=null, max_x_size=null, max_y_size=null, is_lost=false){
 		// State
 		this.position_x = position_x;
 		this.position_y = position_y;
@@ -13,6 +13,8 @@ class Robot {
 		this.instructions = this.validateInstructions(instructions).split("");
 
 		// Aux properties
+		this.max_x_size = max_x_size;
+		this.max_y_size = max_y_size;
 		this.is_lost = is_lost;
 		this.reached_scent = false;
 	}
@@ -25,20 +27,29 @@ class Robot {
 	forward() {
 		// East
 		if (this.angle == 0) {
-			this.position_x++;
+			if( !(this.reached_scent && (this.position_x + 1) > this.max_x_size)){
+				this.position_x++;
+			}
 		// North
 		} else if (this.angle == 90) {
-			this.position_y++;
+			if( !(this.reached_scent && (this.position_y + 1) > this.max_y_size)){
+				this.position_y++;
+			}
 		// West
 		} else if (this.angle == 180) {
-			this.position_x--;
+			if( !(this.reached_scent && (this.position_x - 1) < 0)){
+				this.position_x--;
+			}
 		// South
 		} else if (this.angle == 270) {
-			this.position_y--;
+			if( !(this.reached_scent && (this.position_y - 1) < 0)){
+				this.position_y--;
+			}
 		// Error
 		} else {
 			throw new RangeError('Invalid angle');
 		}
+		this.reached_scent = false;
 	}
 	
 	executeInstruction(){
@@ -67,7 +78,6 @@ class Robot {
 	}
 
 	reachedScent(){
-		this.instructions = [];
 		this.reached_scent = true;
 	}
 
@@ -158,7 +168,7 @@ class Mars {
 	}
 
 	addRobot(position_x, position_y, orientation, instructions){
-		var robot = new Robot(position_x, position_y, orientation, instructions);
+		var robot = new Robot(position_x, position_y, orientation, instructions, this.max_x_size, this.max_y_size);
 		this.robots.push(robot);
 	}
 	
@@ -169,26 +179,24 @@ class Mars {
 			// Execute its instructions until it gets lost or empties its stack
 			while(robot.isLost() == false && robot.instructionsEmpty() == false){
 
-				if(this.map[robot.y][robot.x] == 'X'){
+				let last_position_x = robot.x;
+				let last_position_y = robot.y;
+
+				if(this.map[last_position_y][last_position_x] == 'X'){
 					robot.reachedScent();
-				} else {
+				}
+				robot.executeInstruction();
+				// If the robot goes outside the map	
+				if (!(this.validPosition(robot))) {
 
-					let last_position_x = robot.x;
-					let last_position_y = robot.y;
-					robot.executeInstruction();
+					// Updates last known position of the robot
+					robot.gotLost();
+					robot.x = last_position_x;
+					robot.y = last_position_y;
 
-					// If the robot goes outside the map	
-					if (!(this.validPosition(robot))) {
+					// Marks the map with the scent
+					this.map[last_position_y][last_position_x] = 'X';
 
-						// Updates last known position of the robot
-						robot.gotLost();
-						robot.x = last_position_x;
-						robot.y = last_position_y;
-
-						// Marks the map with the scent
-						this.map[last_position_y][last_position_x] = 'X';
-
-					}
 				}
 			}	
 		}
@@ -224,7 +232,7 @@ mars = new Mars(5, 3);
 mars.addRobot(1, 1, 'E', 'RFRFRFRF');
 mars.addRobot(3, 2, 'N', 'FRRFLLFFRRFLL');
 mars.addRobot(0, 3, 'W', 'LLFFFRFLFL');
-mars.addRobot(3, 2, 'N', 'FFF');
+mars.addRobot(3, 2, 'N', 'FFFLF');
 mars.executeRobots();
 
 // Read input

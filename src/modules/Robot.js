@@ -1,6 +1,6 @@
 class Robot {
 
-	constructor(position_x=null, position_y=null, orientation=null, instructions=null, max_x_size=null, max_y_size=null, is_lost=false){
+	constructor(position_x=null, position_y=null, orientation=null, instructions=null, max_x_size=null, max_y_size=null){
 		// State
 		this.position_x = position_x;
 		this.position_y = position_y;
@@ -10,8 +10,26 @@ class Robot {
 		// Aux properties
 		this.max_x_size = max_x_size;
 		this.max_y_size = max_y_size;
-		this.is_lost = is_lost;
+		this.is_lost = false;
 		this.reached_scent = false;
+
+		// Validaton
+		Robot.validateMaxCoordinates(max_x_size, max_y_size);
+		this.validatePosition();
+	}
+
+	static validateMaxCoordinates(x, y){
+		if ( !(0<=x && x <= 50 && 0 <= y && y <= 50)){
+			throw new RangeError('Invalid coordinates');
+		}
+	}
+
+	// Position is inside limits
+	validatePosition(){
+		if( !(0 <= this.position_x && this.position_x <= this.max_x_size &&
+			  0 <= this.position_y && this.position_y <= this.max_y_size)){
+			throw new RangeError('Invalid position');
+		}
 	}
 
 	rotate(angle) {
@@ -115,7 +133,7 @@ class Robot {
 		} else if (cardinal_orientation == 'W'){
 			angle = 180;
 		} else if (cardinal_orientation == 'S'){
-			angle = 270;j
+			angle = 270;
 		} else {
 			throw new RangeError('Invalid orientation');
 		}

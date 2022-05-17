@@ -3,21 +3,17 @@
  * MartianRobots
  */
 const Mars = require('./modules/Mars.js');
+const read = require('./modules/MarsIO.js');
 
 // Load input
-const fs = require('fs');
-const data = fs.readFileSync('./data/input.txt', {encoding:'utf8', flag:'r'}).split('\n');
-
+//'./data/input.txt'
+const data = read('./data/input.txt');
 // Create map
-let max_x = data[0].split(" ")[0];
-let max_y = data[0].split(" ")[1];
-mars = new Mars(max_x, max_y);
+mars = new Mars(data.max_x, data.max_y);
 
 // Add robots
-for(var i=1; i<data.length; i+=2){
-	initial_position = data[i].split(" ");
-	instructions = data[i+1];
-	mars.addRobot(initial_position[0], initial_position[1], initial_position[2], instructions);
+for(var i=0; i<data.robots.length; i++){
+	mars.addRobot(data.robots[i].x, data.robots[i].y, data.robots[i].orientation, data.robots[i].instructions);
 }
 
 // Execute instructions

@@ -2,6 +2,7 @@ const Robot = require('./Robot.js');
 
 class Mars {
 	constructor(max_x_size, max_y_size){
+		Robot.validateMaxCoordinates(max_x_size, max_y_size);
 		this.max_x_size = max_x_size;
 		this.max_y_size = max_y_size;
 		this.robots = [];
@@ -15,6 +16,7 @@ class Mars {
 			}
 		}
 	}
+	
 
 	addRobot(position_x, position_y, orientation, instructions){
 		var robot = new Robot(position_x, position_y, orientation, instructions, this.max_x_size, this.max_y_size);

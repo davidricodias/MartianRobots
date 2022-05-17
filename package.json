@@ -1,0 +1,32 @@
+{
+  "name": "martianrobots",
+  "version": "0.0.1",
+  "description": "Solution for the MartianRobots proposed coding problem.",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "jest" 
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidricodias/MartianRobots.git"
+  },
+  "keywords": [
+    "robots",
+    "martianrobots",
+    "guidesmiths"
+  ],
+  "author": "José David Rico Días",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/davidricodias/MartianRobots/issues"
+  },
+  "homepage": "https://github.com/davidricodias/MartianRobots#readme",
+  "devDependencies": {
+    "jest": "^28.1.0"
+  }
+}

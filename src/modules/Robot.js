@@ -1,16 +1,11 @@
-/*
- * José David Rico Días
- * MartianRobots
- */
-
 class Robot {
 
 	constructor(position_x=null, position_y=null, orientation=null, instructions=null, max_x_size=null, max_y_size=null, is_lost=false){
 		// State
 		this.position_x = position_x;
 		this.position_y = position_y;
-		this.angle = this.translateCardinalToAngle(orientation);
-		this.instructions = this.validateInstructions(instructions).split("");
+		this.angle = Robot.translateCardinalToAngle(orientation);
+		this.instructions = Robot.validateInstructions(instructions).split("");
 
 		// Aux properties
 		this.max_x_size = max_x_size;
@@ -49,6 +44,7 @@ class Robot {
 		} else {
 			throw new RangeError('Invalid angle');
 		}
+		
 		this.reached_scent = false;
 	}
 	
@@ -103,14 +99,14 @@ class Robot {
 
 	// Function overloading
 	toString(){
-		var output = this.position_x.toString() + " " + this.position_y.toString() + " " + this.translateAngleToCardinal(this.angle); 
+		var output = this.position_x.toString() + " " + this.position_y.toString() + " " + Robot.translateAngleToCardinal(this.angle); 
 		if (this.is_lost){
 			output += (" " + "LOST");
 		}		
 		return output;
 	}
 
-	translateCardinalToAngle(cardinal_orientation){
+	static translateCardinalToAngle(cardinal_orientation){
 		let angle = -1;
 		if (cardinal_orientation == 'E'){
 			angle = 0;
@@ -126,7 +122,7 @@ class Robot {
 		return angle;
 	}
 	
-	translateAngleToCardinal(angle){
+	static translateAngleToCardinal(angle){
 		if(angle == 0){
 			return 'E';
 		} else if (angle == 90){
@@ -140,7 +136,7 @@ class Robot {
 		}
 	}
 
-	validateInstructions(instructions){
+	static validateInstructions(instructions){
 		// Regex for instructions parsing
 		let instructions_expression = new RegExp('^(F|L|R){1,100}$');
 		if (instructions_expression.test(instructions)) {
@@ -151,98 +147,4 @@ class Robot {
 	}
 }
 
-class Mars {
-	constructor(max_x_size, max_y_size){
-		this.max_x_size = max_x_size;
-		this.max_y_size = max_y_size;
-		this.robots = [];
-		
-		// Initializes an empty map
-		this.map = []
-		for(var i=0; i <= max_y_size; i++){
-			this.map[i] = [];
-			for(var j=0; j <= max_x_size; j++){
-				this.map[i][j] = '.';
-			}
-		}
-	}
-
-	addRobot(position_x, position_y, orientation, instructions){
-		var robot = new Robot(position_x, position_y, orientation, instructions, this.max_x_size, this.max_y_size);
-		this.robots.push(robot);
-	}
-	
-	executeRobots(){
-		// For each robot
-		for(var i=0; i<this.robots.length; i++){
-			let robot = this.robots[i];
-			// Execute its instructions until it gets lost or empties its stack
-			while(robot.isLost() == false && robot.instructionsEmpty() == false){
-
-				let last_position_x = robot.x;
-				let last_position_y = robot.y;
-
-				if(this.map[last_position_y][last_position_x] == 'X'){
-					robot.reachedScent();
-				}
-				robot.executeInstruction();
-				// If the robot goes outside the map	
-				if (!(this.validPosition(robot))) {
-
-					// Updates last known position of the robot
-					robot.gotLost();
-					robot.x = last_position_x;
-					robot.y = last_position_y;
-
-					// Marks the map with the scent
-					this.map[last_position_y][last_position_x] = 'X';
-
-				}
-			}	
-		}
-	}
-
-	validPosition(robot){
-		if (0 <= robot.x && robot.x <= this.max_x_size &&
-			0 <= robot.y && robot.y <= this.max_y_size) {
-			return true;
-		}
-		return false;
-	}
-
-	robots(){
-		return this.robots;
-	}
-
-	toString(){
-		let output = '';
-		for(var i=0; i<this.robots.length; i++){
-			output += this.robots[i].toString();
-			if (i < (this.robots.length - 1)) {
-				output += '\n';
-			}
-		}
-		return output;
-	}
-}
-
-
-// Load input
-const fs = require('fs');
-const data = fs.readFileSync('./input.txt', {encoding:'utf8', flag:'r'}).split('\n');
-
-// Create map
-let max_x = data[0].split(" ")[0];
-let max_y = data[0].split(" ")[1];
-mars = new Mars(max_x, max_y);
-
-// Add robots
-for(var i=1; i<data.length; i+=2){
-	initial_position = data[i].split(" ");
-	instructions = data[i+1];
-	mars.addRobot(initial_position[0], initial_position[1], initial_position[2], instructions);
-}
-// Execute instructions
-mars.executeRobots();
-// Write ouput
-console.log(mars.toString());
+module.exports = Robot;

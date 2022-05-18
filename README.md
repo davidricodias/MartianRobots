@@ -1,7 +1,7 @@
 # MartianRobots
 
 ## Product design
-The product will implement a CLI programmed `node`.
+The product will implement a CLI programmed in `node`.
 
 The entry point is `index.js`.
 

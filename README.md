@@ -13,6 +13,7 @@ The design follows the following architecture:
 For the design I followed the encapsulation principle, By separating responsabilities, I created the classes:
 - _Mars_, which contains methods to create the Mars surface, add robots and execute all its instructions.
 - _Robot_, which contains methods to create a robot, validate and execute its instructions and change its state. It's important to note that in order to expand the robot capabilities in the future, the orientation was defined as an angle, that needs to be translated to a cardinal orientation for the moment.
+- 
 To manage the files, _MarsIO_ was created, in order to encapsulate the reading needs.
 - _MarsIO_, which contains the `read` function, able to read `input.txt`.
 If the reading was succesful, read should return an object with the following structure:

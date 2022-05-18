@@ -6,17 +6,18 @@ module.exports = function read(file_name){
 	
 	// max_x and max_y
 	max_x_y = data[0].split(" ");
-	output.max_x = max_x_y[0];
-	output.max_y = max_x_y[1];
+	output.max_x = parseInt(max_x_y[0]);
+	output.max_y = parseInt(max_x_y[1]);
 
 	// Extracts robots
 	robots = [];
 	for(let i=1; i < data.length; i+=2){
 		robot = {};
 		robot_initial_position = data[i].split(" ");
-		robot.x = robot_initial_position[0];
-		robot.y = robot_initial_position[1];
+		robot.x = parseInt(robot_initial_position[0]);
+		robot.y = parseInt(robot_initial_position[1]);
 		robot.orientation = robot_initial_position[2];
+
 		robot.instructions = data[i+1];
 		robots.push(robot);
 	}

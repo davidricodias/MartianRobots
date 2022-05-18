@@ -29,6 +29,10 @@ If the reading was succesful, read should return an object with the following st
   ]
 }
 ```
+## Tests
+To test the product `Jest` was used. I created 3 suites, one for _Robot_, one for _Mars_ and the last one for the entry point `index.js`. Only one case was written for `index.js`, the case given in the document. For _Robot_ and _Mars_ unit tests and structural tests were implemented.
+
+However it's important to note that the test scope was limited due to time availability.
 ## Installing
 To install this program you shall:
 1. Clone it using git clone:
